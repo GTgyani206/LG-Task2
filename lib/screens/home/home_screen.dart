@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lg_task2/widgets/lg_screens.dart';
 import'package:lg_task2/widgets/navbar.dart';
+import 'package:lg_task2/services/ssh.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+  final SSH ssh = SSH();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 20),
           LGScreens(),
           const SizedBox(height: 20),
-          DashUI(),
+          DashUI(ssh: ssh),
         ],
       ),
 
@@ -29,6 +31,10 @@ class HomeScreen extends StatelessWidget {
 
 
 class DashUI extends StatelessWidget {
+  const DashUI({super.key, required this.ssh});
+
+  final SSH ssh;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -48,6 +54,10 @@ class DashUI extends StatelessWidget {
                     width: 150,
                     text: 'Relaunch',
                     color: Color(0xFFFBBC04),
+                    onPressed: () {
+                      ssh.relaunchLG();
+                    },
+                    
                   ),
                   const SizedBox(height: 20),
                   // Clear KML Button
@@ -57,6 +67,9 @@ class DashUI extends StatelessWidget {
                     width: 150,
                     text: 'Clear KML',
                     color: Color(0xFFFBBC04),
+                    onPressed: () {
+                      ssh.clearKML();
+                    },
                   ),
                 ],
               ),
@@ -78,6 +91,9 @@ class DashUI extends StatelessWidget {
                 height: 100,
                 width: 175,
                 multiline: true,
+                onPressed: () {
+                  ssh.teleportToRandomPlace("India");
+                },
               ),
               // Show Logo
               ActionButton(
@@ -103,6 +119,7 @@ class ActionButton extends StatelessWidget {
   final bool multiline;
   final double width;
   final double height;
+  final VoidCallback? onPressed;
 
   const ActionButton({
     super.key,
@@ -112,33 +129,37 @@ class ActionButton extends StatelessWidget {
     required this.width,
     required this.height,
     this.multiline = false,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height ,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 30, color: Colors.black),
-            const SizedBox(height: 8),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: width,
+        height: height ,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 30, color: Colors.black),
+              const SizedBox(height: 8),
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -146,6 +167,8 @@ class ActionButton extends StatelessWidget {
 }
 
 class LGStatusCard extends StatelessWidget {
+  const LGStatusCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -196,11 +219,11 @@ class LGStatusRow extends StatelessWidget {
   final Color statusColor;
 
   const LGStatusRow({
-    Key? key,
+    super.key,
     required this.label,
     required this.status,
     required this.statusColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

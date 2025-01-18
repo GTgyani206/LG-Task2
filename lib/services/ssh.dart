@@ -131,5 +131,11 @@ Future<SSHSession?> clearKML() async {
     return null;
   }
 
+   Future<SSHSession?> teleportToRandomPlace(String placeName) async {
+    final teleportCommand = 'echo "search=$placeName" > /tmp/query.txt';
+    return await execute(
+        teleportCommand, 'Teleported to $placeName successfully');
+  }
+
   
 }
