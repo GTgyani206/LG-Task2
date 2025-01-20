@@ -2,7 +2,7 @@ import 'dart:async'; // For using Future
 import 'dart:io'; // For using File
 import 'package:shared_preferences/shared_preferences.dart';  // For using shared preferences
 import 'package:dartssh2/dartssh2.dart'; // For using SSH
-
+import '../models/logo_kml.dart'; // For using LogoKml class
 
 
 class SSH{
@@ -74,6 +74,21 @@ class SSH{
     }
   }
 
+  Future<void> showLogo() async{
+    try {
+      if (_client == null) {
+        print('SSH client is not initialized.');
+        return null;
+      }
+      String logo = LogoKml().openLogoKML;
+      await _client?.execute("echo '$logo' > /var/www/html/kml/slave_3.kml");
+      print("Kml uploaded");
+    } catch (error) {
+      print("An error has occured while excuting the command : $error");
+      return null;
+    }
+  }
+
   //Function to reboot the LG
    Future<SSHSession?> relaunchLG() async {
     final relaunchCmd = """
@@ -137,5 +152,21 @@ Future<SSHSession?> clearKML() async {
         teleportCommand, 'Teleported to $placeName successfully');
   }
 
-  
+ // Simulate a status map for LG screens
+  final Map<String, bool> lgStatus = {
+    "lg1": false, // LG1 is online
+    "lg2": false, // LG2 is offline
+    "lg3": false, // LG3 is online
+  };
+
+  // Method to get the status of a specific LG screen
+  bool getLGStatus(String lg) {
+    // Simulated status retrieval logic
+    if (lgStatus.containsKey(lg)) {
+      return lgStatus[lg]!;
+    } else {
+      throw Exception("LG screen '$lg' not found.");
+    }
+  }
+
 }

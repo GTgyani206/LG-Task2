@@ -11,18 +11,22 @@ class ConnectionScreen extends StatefulWidget {
 
 class _ConnectionScreenState extends State<ConnectionScreen> {
   // Instance of the SSH class
-  late SSH ssh;
+  SSH ssh = SSH();
   // Connection status
   bool connectionStatus = false;
 
-
-// Connect to Liquid Galaxy
+  // Connect to Liquid Galaxy
   Future<void> _connectToLG() async {
     try {
+      // Ensure we don't create a new instance on every connection attempt
       bool? result = await ssh.connectToLG();
-      if (mounted) {
+      if (result == true) {
         setState(() {
-          connectionStatus = result ?? false;
+          connectionStatus = true;
+        });
+      }else{
+        setState(() {
+          connectionStatus = false;
         });
       }
     } catch (e) {
@@ -30,12 +34,12 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     }
   }
 
-    @override
+  @override
   void initState() {
     super.initState();
     ssh = SSH(); // Initialize SSH object
     _loadSettings(); // Load saved settings
-    _connectToLG(); // Attempt initial connection
+    // _connectToLG(); // Removed initial connection attempt, now handled after user action
   }
 
   // Controllers for input fields
@@ -55,7 +59,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     _rigsController.dispose();
     super.dispose();
   }
- 
+
   // Load settings from shared preferences
   Future<void> _loadSettings() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -78,22 +82,17 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     await prefs.setString('numberOfRigs', _rigsController.text);
   }
 
-   // Save settings and attempt connection
+  // Save settings and attempt connection
   Future<void> _connectToLGDialogue() async {
     try {
-      await _saveSettings(); // Save settings
-      bool? result = await ssh.connectToLG();
+      await _saveSettings();// Save settings before attempting to connect
+      await _connectToLG();  // Call the actual connection method
 
-      setState(() {
-        connectionStatus = result ?? false;
-      });
-
-      _showStatusDialog(result == true);
+      _showStatusDialog(connectionStatus);
     } catch (e) {
       _showErrorDialog('Connection Error', e.toString());
     }
   }
-
 
   // Show status dialog
   void _showStatusDialog(bool isConnected) {
@@ -135,7 +134,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     );
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -163,7 +162,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
             ListTile(
               title: Center(
                 child: ElevatedButton(
-                  onPressed: _connectToLGDialogue,
+                  onPressed: _connectToLGDialogue,  // Directly call connection dialogue method
                   child: const Text('Connect to LG'),
                 ),
               ),

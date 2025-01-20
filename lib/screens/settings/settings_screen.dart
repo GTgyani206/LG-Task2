@@ -26,13 +26,6 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.contrast),
-            title: Text('Theme'),
-            onTap: () {
-              // Navigate to notification settings
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.info),
             title: Text('About'),
              onTap: () {

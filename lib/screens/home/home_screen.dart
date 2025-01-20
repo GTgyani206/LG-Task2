@@ -102,6 +102,9 @@ class DashUI extends StatelessWidget {
                 height: 100,
                 width: 175,
                 color: Color(0xFF4285F4),
+                onPressed: () {
+                  ssh.showLogo();
+                },
                 
               ),
             ],
@@ -167,7 +170,9 @@ class ActionButton extends StatelessWidget {
 }
 
 class LGStatusCard extends StatelessWidget {
-  const LGStatusCard({super.key});
+  LGStatusCard({super.key});
+  
+  final SSH ssh = SSH();
 
   @override
   Widget build(BuildContext context) {
@@ -194,18 +199,18 @@ class LGStatusCard extends StatelessWidget {
           const SizedBox(height: 10),
           LGStatusRow(
             label: 'lg1',
-            status: 'connected',
-            statusColor: Colors.green,
+            status: ssh.getLGStatus("lg1") ? 'connected' : 'not connected',
+            statusColor: ssh.getLGStatus("lg1") ? Colors.green : Colors.red,
           ),
           LGStatusRow(
             label: 'lg2',
-            status: 'not connected',
-            statusColor: Colors.red,
+            status: ssh.getLGStatus("lg2") ? 'connected' : 'not connected',
+            statusColor: ssh.getLGStatus("lg2") ? Colors.green : Colors.red,
           ),
           LGStatusRow(
             label: 'lg3',
-            status: 'connected',
-            statusColor: Colors.green,
+            status: ssh.getLGStatus("lg3") ? 'connected' : 'not connected',
+            statusColor: ssh.getLGStatus("lg3") ? Colors.green : Colors.red,
           ),
         ],
       ),

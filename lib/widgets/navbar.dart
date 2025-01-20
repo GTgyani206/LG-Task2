@@ -25,7 +25,7 @@ class FloatingBottomNavBar extends StatelessWidget {
             ]
           ),
           child: BottomAppBar(
-            color: Colors.black,
+            color:  Color(0xFF202124),
             height: 60,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
